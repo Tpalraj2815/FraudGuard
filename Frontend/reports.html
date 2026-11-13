@@ -1,0 +1,695 @@
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>FraudGuard - Reports</title>
+
+    <link rel="stylesheet" href="css/style.css">
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+
+        :root {
+            --bg: #07111f;
+            --sidebar: #101e30;
+            --card: #101e30;
+            --card-light: #17283d;
+            --primary: #18c8d8;
+            --secondary: #7167f9;
+            --text: #f3f7fc;
+            --muted: #9aacc1;
+            --border: rgba(255,255,255,0.09);
+            --danger: #ff5d6c;
+            --success: #25d69a;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            background: var(--bg) !important;
+            color: var(--text) !important;
+            min-height: 100vh;
+        }
+
+        .dashboard-container {
+            display: flex !important;
+            min-height: 100vh;
+            background: var(--bg) !important;
+        }
+
+        /* SIDEBAR */
+
+        .sidebar {
+            width: 255px !important;
+            min-width: 255px;
+            min-height: 100vh;
+            background: var(--sidebar) !important;
+            color: var(--text) !important;
+            padding: 30px 20px !important;
+            border-right: 1px solid var(--border);
+        }
+
+        .sidebar h2 {
+            text-align: center;
+            color: white !important;
+            font-size: 25px;
+            font-weight: 800;
+            margin-bottom: 10px;
+        }
+
+        .sidebar h2 span {
+            color: var(--primary);
+        }
+
+        .admin-text {
+            text-align: center;
+            color: var(--muted) !important;
+            font-size: 13px;
+            margin-bottom: 40px;
+        }
+
+        .sidebar nav {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .sidebar nav a {
+            display: block;
+            padding: 14px 15px !important;
+            border-radius: 9px;
+            color: #b9c9dc !important;
+            font-size: 14px;
+            text-decoration: none;
+            transition: 0.3s;
+        }
+
+        .sidebar nav a:hover {
+            background: rgba(24,200,216,0.09) !important;
+            color: var(--primary) !important;
+        }
+
+        .sidebar nav a.active {
+            background: rgba(24,200,216,0.12) !important;
+            border: 1px solid rgba(24,200,216,0.25);
+            color: var(--primary) !important;
+        }
+
+        /* MAIN CONTENT */
+
+        .main-content {
+            flex: 1;
+            min-width: 0;
+            padding: 35px !important;
+            background: #0b1727 !important;
+            color: var(--text) !important;
+        }
+
+        .top-bar {
+            margin-bottom: 30px;
+        }
+
+        .top-bar h1 {
+            font-size: 30px;
+            font-weight: 800;
+            color: white !important;
+            margin-bottom: 9px;
+        }
+
+        .top-bar p {
+            color: var(--muted) !important;
+            font-size: 14px;
+        }
+
+        /* SUMMARY CARDS */
+
+        .stats-grid {
+            display: grid !important;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 18px !important;
+            margin-bottom: 25px;
+        }
+
+        .stat-card {
+            display: flex !important;
+            align-items: center;
+            gap: 15px;
+            min-width: 0;
+            padding: 23px 18px !important;
+            background: var(--card) !important;
+            border: 1px solid var(--border);
+            border-radius: 13px !important;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        }
+
+        .stat-icon {
+            min-width: 48px;
+            width: 48px;
+            height: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 12px;
+            background: rgba(24,200,216,0.12) !important;
+            font-size: 23px;
+        }
+
+        .stat-card h3 {
+            color: var(--muted) !important;
+            font-size: 12px !important;
+            font-weight: 600;
+            margin-bottom: 9px;
+        }
+
+        .stat-card p {
+            color: white !important;
+            font-size: 23px !important;
+            font-weight: 800;
+            overflow-wrap: anywhere;
+        }
+
+        .fraud-card .stat-icon {
+            background: rgba(255,93,108,0.12) !important;
+        }
+
+        .fraud-card p {
+            color: var(--danger) !important;
+        }
+
+        .safe-card .stat-icon {
+            background: rgba(37,214,154,0.12) !important;
+        }
+
+        .safe-card p {
+            color: var(--success) !important;
+        }
+
+        .percentage-card .stat-icon {
+            background: rgba(113,103,249,0.14) !important;
+        }
+
+        .percentage-card p {
+            color: #a9a2ff !important;
+        }
+
+        /* FRAUD AMOUNT SUMMARY */
+
+        .report-summary-card {
+            display: flex !important;
+            justify-content: space-between;
+            align-items: center;
+            gap: 20px;
+            padding: 25px !important;
+            margin-bottom: 25px;
+            background:
+                linear-gradient(
+                    110deg,
+                    rgba(24,200,216,0.12),
+                    rgba(113,103,249,0.12)
+                ),
+                var(--card) !important;
+            border: 1px solid rgba(24,200,216,0.2);
+            border-radius: 13px;
+        }
+
+        .report-summary-card h2 {
+            color: #dce7f3 !important;
+            font-size: 17px;
+            margin-bottom: 10px;
+        }
+
+        .report-summary-card p {
+            color: var(--primary) !important;
+            font-size: 30px;
+            font-weight: 800;
+        }
+
+        .report-summary-card button {
+            padding: 13px 22px;
+            border: none;
+            border-radius: 8px;
+            background: linear-gradient(
+                135deg,
+                var(--primary),
+                var(--secondary)
+            );
+            color: #07111f;
+            font-size: 13px;
+            font-weight: 800;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .report-summary-card button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(24,200,216,0.2);
+        }
+
+        /* CHART GRID */
+
+        .charts-grid {
+            display: grid !important;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 22px !important;
+            margin-bottom: 22px;
+        }
+
+        .chart-card {
+            min-width: 0;
+            height: 370px;
+            padding: 25px !important;
+            background: var(--card) !important;
+            border: 1px solid var(--border);
+            border-radius: 13px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        }
+
+        .chart-card h2 {
+            color: white !important;
+            font-size: 17px;
+            font-weight: 700;
+            margin-bottom: 22px;
+        }
+
+        .chart-card canvas {
+            max-width: 100%;
+            max-height: 285px;
+        }
+
+        /* REPORT INFORMATION */
+
+        .recent-section {
+            background: var(--card) !important;
+            border: 1px solid var(--border);
+            border-radius: 13px;
+            padding: 25px !important;
+            margin-top: 22px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        }
+
+        .recent-section h2 {
+            color: white !important;
+            font-size: 20px;
+            margin-bottom: 18px;
+        }
+
+        .recent-section p {
+            color: var(--muted) !important;
+            font-size: 14px;
+            line-height: 1.8;
+            margin-bottom: 14px;
+        }
+
+        /* RESPONSIVE */
+
+        @media (max-width: 1150px) {
+
+            .stats-grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+
+        }
+
+        @media (max-width: 950px) {
+
+            .sidebar {
+                width: 220px !important;
+                min-width: 220px;
+            }
+
+            .main-content {
+                padding: 25px !important;
+            }
+
+            .charts-grid {
+                gap: 15px !important;
+            }
+
+            .chart-card {
+                padding: 18px !important;
+            }
+
+        }
+
+        @media (max-width: 700px) {
+
+            .dashboard-container {
+                flex-direction: column;
+            }
+
+            .sidebar {
+                width: 100% !important;
+                min-width: 0;
+                min-height: auto;
+                padding: 20px !important;
+            }
+
+            .sidebar h2 {
+                font-size: 22px;
+            }
+
+            .admin-text {
+                margin-bottom: 20px;
+            }
+
+            .sidebar nav {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 8px;
+            }
+
+            .sidebar nav a {
+                padding: 12px 10px !important;
+                font-size: 12px;
+                text-align: center;
+            }
+
+            .main-content {
+                padding: 22px 15px !important;
+            }
+
+            .top-bar h1 {
+                font-size: 25px;
+            }
+
+            .charts-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .chart-card {
+                height: 340px;
+            }
+
+            .report-summary-card {
+                align-items: flex-start;
+                flex-direction: column;
+            }
+
+            .report-summary-card button {
+                width: 100%;
+            }
+
+        }
+
+        @media (max-width: 450px) {
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .stat-card {
+                padding: 18px !important;
+            }
+
+            .chart-card {
+                height: 320px;
+                padding: 17px !important;
+            }
+
+            .chart-card h2 {
+                font-size: 15px;
+            }
+
+            .recent-section {
+                padding: 18px !important;
+            }
+
+        }
+
+        @media (max-width: 380px) {
+
+            .sidebar nav {
+                grid-template-columns: 1fr;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+    <div class="dashboard-container">
+
+        <!-- SIDEBAR -->
+
+        <aside class="sidebar">
+
+            <h2>🛡 Fraud<span>Guard</span></h2>
+
+            <p class="admin-text">
+                Fraud Detection System
+            </p>
+
+            <nav>
+
+                <a href="dashboard.html">
+                    📊 Dashboard
+                </a>
+
+                <a href="prediction.html">
+                    🔍 Fraud Prediction
+                </a>
+
+                <a href="transactions.html">
+                    📋 Transactions
+                </a>
+
+                <a href="alert.html">
+                    🚨 Fraud Alerts
+                </a>
+
+                <a href="reports.html" class="active">
+                    📑 Reports
+                </a>
+
+                <a href="#" onclick="logout(); return false;">
+                    🚪 Logout
+                </a>
+
+            </nav>
+
+        </aside>
+
+
+        <!-- MAIN CONTENT -->
+
+        <main class="main-content">
+
+            <div class="top-bar">
+
+                <h1>📑 Fraud Detection Reports</h1>
+
+                <p>
+                    Analyze transaction and fraud statistics
+                </p>
+
+            </div>
+
+
+            <!-- REPORT SUMMARY -->
+
+            <section class="stats-grid">
+
+                <div class="stat-card">
+
+                    <div class="stat-icon">
+                        💳
+                    </div>
+
+                    <div>
+
+                        <h3>Total Transactions</h3>
+
+                        <p id="reportTotal">0</p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="stat-card fraud-card">
+
+                    <div class="stat-icon">
+                        🚨
+                    </div>
+
+                    <div>
+
+                        <h3>Fraud Transactions</h3>
+
+                        <p id="reportFraud">0</p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="stat-card safe-card">
+
+                    <div class="stat-icon">
+                        ✅
+                    </div>
+
+                    <div>
+
+                        <h3>Safe Transactions</h3>
+
+                        <p id="reportSafe">0</p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="stat-card percentage-card">
+
+                    <div class="stat-icon">
+                        📈
+                    </div>
+
+                    <div>
+
+                        <h3>Fraud Percentage</h3>
+
+                        <p id="reportPercentage">0%</p>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+
+            <!-- FRAUD AMOUNT -->
+
+            <section class="report-summary-card">
+
+                <div>
+
+                    <h2>💰 Total Fraud Amount</h2>
+
+                    <p id="reportAmount">₹0</p>
+
+                </div>
+
+                <button onclick="generateReport()">
+                    📄 Generate Report
+                </button>
+
+            </section>
+
+
+            <!-- FRAUD CHARTS -->
+
+            <section class="charts-grid">
+
+                <div class="chart-card">
+
+                    <h2>Fraud vs Safe Transactions</h2>
+
+                    <canvas id="reportFraudChart"></canvas>
+
+                </div>
+
+
+                <div class="chart-card">
+
+                    <h2>Fraud by Location</h2>
+
+                    <canvas id="locationChart"></canvas>
+
+                </div>
+
+            </section>
+
+
+            <section class="charts-grid">
+
+                <div class="chart-card">
+
+                    <h2>Fraud by Transaction Type</h2>
+
+                    <canvas id="typeChart"></canvas>
+
+                </div>
+
+
+                <div class="chart-card">
+
+                    <h2>Fraud by Device</h2>
+
+                    <canvas id="deviceChart"></canvas>
+
+                </div>
+
+            </section>
+
+
+            <!-- REPORT INFORMATION -->
+
+            <section class="recent-section">
+
+                <h2>📊 Report Summary</h2>
+
+                <p>
+                    This report provides an overview of fraudulent and
+                    safe transactions detected by the FraudGuard system.
+                </p>
+
+                <p>
+                    FraudGuard uses transaction information such as amount,
+                    location, device type, transaction time, previous
+                    transactions and failed attempts to identify
+                    suspicious activity.
+                </p>
+
+            </section>
+
+        </main>
+
+    </div>
+
+
+    <!-- AUTHENTICATION -->
+
+    <script src="js/auth.js"></script>
+
+    <script>
+
+        // Verify admin session before loading reports.
+
+        (async function () {
+
+            const allowed = await checkLogin();
+
+            if (!allowed) {
+                return;
+            }
+
+            // Load reports JavaScript only after authentication.
+
+            const script = document.createElement("script");
+
+            script.src = "js/reports.js";
+
+            document.body.appendChild(script);
+
+        })();
+
+    </script>
+
+</body>
+
+</html>

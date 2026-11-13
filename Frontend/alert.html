@@ -1,0 +1,642 @@
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>FraudGuard - Fraud Alerts</title>
+
+    <link rel="stylesheet" href="css/style.css">
+
+    <style>
+        :root {
+            --bg: #07111f;
+            --sidebar: #101e30;
+            --card: #101e30;
+            --card-light: #17283d;
+            --primary: #18c8d8;
+            --secondary: #7167f9;
+            --text: #f3f7fc;
+            --muted: #9aacc1;
+            --border: rgba(255,255,255,0.09);
+            --danger: #ff5d6c;
+            --success: #25d69a;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            background: var(--bg) !important;
+            color: var(--text) !important;
+            min-height: 100vh;
+        }
+
+        .dashboard-container {
+            display: flex !important;
+            min-height: 100vh;
+            background: var(--bg) !important;
+        }
+
+        /* SIDEBAR */
+
+        .sidebar {
+            width: 255px !important;
+            min-width: 255px;
+            min-height: 100vh;
+            background: var(--sidebar) !important;
+            color: var(--text) !important;
+            padding: 30px 20px !important;
+            border-right: 1px solid var(--border);
+        }
+
+        .sidebar h2 {
+            text-align: center;
+            color: white !important;
+            font-size: 25px;
+            font-weight: 800;
+            margin-bottom: 10px;
+        }
+
+        .sidebar h2 span {
+            color: var(--primary);
+        }
+
+        .admin-text {
+            text-align: center;
+            color: var(--muted) !important;
+            font-size: 13px;
+            margin-bottom: 40px;
+        }
+
+        .sidebar nav {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .sidebar nav a {
+            display: block;
+            padding: 14px 15px !important;
+            border-radius: 9px;
+            color: #b9c9dc !important;
+            font-size: 14px;
+            text-decoration: none;
+            transition: 0.3s;
+        }
+
+        .sidebar nav a:hover {
+            background: rgba(24,200,216,0.09) !important;
+            color: var(--primary) !important;
+        }
+
+        .sidebar nav a.active {
+            background: rgba(24,200,216,0.12) !important;
+            border: 1px solid rgba(24,200,216,0.25);
+            color: var(--primary) !important;
+        }
+
+        /* MAIN CONTENT */
+
+        .main-content {
+            flex: 1;
+            min-width: 0;
+            padding: 35px !important;
+            background: #0b1727 !important;
+            color: var(--text) !important;
+        }
+
+        .top-bar {
+            margin-bottom: 30px;
+        }
+
+        .top-bar h1 {
+            font-size: 30px;
+            font-weight: 800;
+            color: white !important;
+            margin-bottom: 9px;
+        }
+
+        .top-bar p {
+            color: var(--muted) !important;
+            font-size: 14px;
+        }
+
+        /* SUMMARY CARDS */
+
+        .stats-grid {
+            display: grid !important;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 18px !important;
+            margin-bottom: 25px;
+        }
+
+        .stat-card {
+            display: flex !important;
+            align-items: center;
+            gap: 15px;
+            min-width: 0;
+            padding: 23px 18px !important;
+            background: var(--card) !important;
+            border: 1px solid var(--border);
+            border-radius: 13px !important;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        }
+
+        .stat-icon {
+            min-width: 48px;
+            width: 48px;
+            height: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 12px;
+            background: rgba(24,200,216,0.12) !important;
+            font-size: 23px;
+        }
+
+        .stat-card h3 {
+            color: var(--muted) !important;
+            font-size: 12px !important;
+            font-weight: 600;
+            margin-bottom: 9px;
+        }
+
+        .stat-card p {
+            color: white !important;
+            font-size: 23px !important;
+            font-weight: 800;
+            overflow-wrap: anywhere;
+        }
+
+        .stat-card.fraud-card .stat-icon {
+            background: rgba(255,93,108,0.12) !important;
+        }
+
+        .fraud-card p,
+        #fraudCount,
+        #highRiskCount {
+            color: var(--danger) !important;
+        }
+
+        #fraudAmount {
+            color: #ff7a85 !important;
+        }
+
+        #topLocation {
+            color: var(--primary) !important;
+        }
+
+        /* SEARCH */
+
+        .transaction-controls {
+            margin-bottom: 25px;
+        }
+
+        .transaction-controls input {
+            width: 100%;
+            padding: 15px 17px !important;
+            background: var(--card) !important;
+            color: white !important;
+            border: 1px solid var(--border) !important;
+            border-radius: 9px !important;
+            outline: none;
+            font-size: 14px;
+        }
+
+        .transaction-controls input::placeholder {
+            color: #8498af !important;
+        }
+
+        .transaction-controls input:focus {
+            border-color: var(--primary) !important;
+            box-shadow: 0 0 0 3px rgba(24,200,216,0.1);
+        }
+
+        /* FRAUD TABLE CARD */
+
+        .recent-section {
+            background: var(--card) !important;
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 25px !important;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 15px;
+            margin-bottom: 22px;
+        }
+
+        .section-header h2 {
+            color: white !important;
+            font-size: 21px;
+            font-weight: 700;
+        }
+
+        #alertCount {
+            color: var(--muted) !important;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        /* TABLE */
+
+        .table-container {
+            width: 100%;
+            overflow-x: auto;
+            border-radius: 8px;
+        }
+
+        table {
+            width: 100%;
+            min-width: 850px;
+            border-collapse: collapse;
+            background: transparent !important;
+        }
+
+        thead {
+            background: #17283d !important;
+        }
+
+        th {
+            padding: 15px 13px !important;
+            text-align: left;
+            color: #dce7f3 !important;
+            font-size: 13px;
+            font-weight: 700;
+            white-space: nowrap;
+            border-bottom: 1px solid var(--border) !important;
+        }
+
+        td {
+            padding: 15px 13px !important;
+            color: #b9c9dc !important;
+            font-size: 13px;
+            border-bottom: 1px solid var(--border) !important;
+            white-space: nowrap;
+        }
+
+        tbody tr {
+            background: transparent !important;
+            transition: 0.2s;
+        }
+
+        tbody tr:hover {
+            background: rgba(24,200,216,0.06) !important;
+        }
+
+        tbody tr:last-child td {
+            border-bottom: none !important;
+        }
+
+        /* RISK INDICATORS */
+
+        .fraud-status,
+        .status-fraud {
+            color: var(--danger) !important;
+            font-weight: 800;
+        }
+
+        .high-risk {
+            color: var(--danger) !important;
+            font-weight: 800;
+        }
+
+        /* SCROLLBAR */
+
+        .table-container::-webkit-scrollbar {
+            height: 7px;
+        }
+
+        .table-container::-webkit-scrollbar-track {
+            background: #0a1727;
+            border-radius: 10px;
+        }
+
+        .table-container::-webkit-scrollbar-thumb {
+            background: #344c65;
+            border-radius: 10px;
+        }
+
+        /* RESPONSIVE */
+
+        @media (max-width: 1100px) {
+            .stats-grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+        }
+
+        @media (max-width: 900px) {
+            .sidebar {
+                width: 220px !important;
+                min-width: 220px;
+            }
+
+            .main-content {
+                padding: 25px !important;
+            }
+        }
+
+        @media (max-width: 650px) {
+            .dashboard-container {
+                flex-direction: column;
+            }
+
+            .sidebar {
+                width: 100% !important;
+                min-width: 0;
+                min-height: auto;
+                padding: 20px !important;
+            }
+
+            .sidebar h2 {
+                font-size: 22px;
+            }
+
+            .admin-text {
+                margin-bottom: 20px;
+            }
+
+            .sidebar nav {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 8px;
+            }
+
+            .sidebar nav a {
+                padding: 12px 10px !important;
+                font-size: 12px;
+                text-align: center;
+            }
+
+            .main-content {
+                padding: 22px 15px !important;
+            }
+
+            .top-bar h1 {
+                font-size: 25px;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+                gap: 12px !important;
+            }
+
+            .stat-card {
+                padding: 18px !important;
+            }
+
+            .recent-section {
+                padding: 16px !important;
+            }
+
+            .section-header {
+                align-items: flex-start;
+                flex-direction: column;
+            }
+
+            .section-header h2 {
+                font-size: 19px;
+            }
+        }
+
+        @media (max-width: 380px) {
+            .sidebar nav {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+
+</head>
+
+<body>
+
+    <div class="dashboard-container">
+
+        <!-- SIDEBAR -->
+
+        <aside class="sidebar">
+
+            <h2>🛡 Fraud<span>Guard</span></h2>
+
+            <p class="admin-text">
+                Fraud Detection System
+            </p>
+
+            <nav>
+
+                <a href="dashboard.html">
+                    📊 Dashboard
+                </a>
+
+                <a href="prediction.html">
+                    🔍 Fraud Prediction
+                </a>
+
+                <a href="transactions.html">
+                    📋 Transactions
+                </a>
+
+                <a href="alert.html" class="active">
+                    🚨 Fraud Alerts
+                </a>
+
+                <a href="reports.html">
+                    📑 Reports
+                </a>
+
+                <a href="#" onclick="logout(); return false;">
+                    🚪 Logout
+                </a>
+
+            </nav>
+
+        </aside>
+
+
+        <!-- MAIN CONTENT -->
+
+        <main class="main-content">
+
+            <div class="top-bar">
+
+                <h1>🚨 Fraud Alerts</h1>
+
+                <p>
+                    Monitor suspicious and fraudulent transactions
+                </p>
+
+            </div>
+
+
+            <!-- ALERT SUMMARY -->
+
+            <section class="stats-grid">
+
+                <div class="stat-card fraud-card">
+
+                    <div class="stat-icon">
+                        🚨
+                    </div>
+
+                    <div>
+                        <h3>Fraud Transactions</h3>
+
+                        <p id="fraudCount">0</p>
+                    </div>
+
+                </div>
+
+
+                <div class="stat-card">
+
+                    <div class="stat-icon">
+                        💰
+                    </div>
+
+                    <div>
+                        <h3>Suspicious Amount</h3>
+
+                        <p id="fraudAmount">₹0</p>
+                    </div>
+
+                </div>
+
+
+                <div class="stat-card">
+
+                    <div class="stat-icon">
+                        📍
+                    </div>
+
+                    <div>
+                        <h3>Top Fraud Location</h3>
+
+                        <p id="topLocation">-</p>
+                    </div>
+
+                </div>
+
+
+                <div class="stat-card">
+
+                    <div class="stat-icon">
+                        ⚠️
+                    </div>
+
+                    <div>
+                        <h3>High Risk</h3>
+
+                        <p id="highRiskCount">0</p>
+                    </div>
+
+                </div>
+
+            </section>
+
+
+            <!-- SEARCH -->
+
+            <section class="transaction-controls">
+
+                <input
+                    type="text"
+                    id="alertSearch"
+                    placeholder="🔎 Search fraud alerts..."
+                    autocomplete="off"
+                >
+
+            </section>
+
+
+            <!-- FRAUD ALERT TABLE -->
+
+            <section class="recent-section">
+
+                <div class="section-header">
+
+                    <h2>🚨 Suspicious Transactions</h2>
+
+                    <span id="alertCount">
+                        Loading...
+                    </span>
+
+                </div>
+
+
+                <div class="table-container">
+
+                    <table>
+
+                        <thead>
+
+                            <tr>
+                                <th>Transaction ID</th>
+                                <th>Amount</th>
+                                <th>Type</th>
+                                <th>Location</th>
+                                <th>Device</th>
+                                <th>Time</th>
+                                <th>Previous</th>
+                                <th>Failed</th>
+                                <th>Risk</th>
+                            </tr>
+
+                        </thead>
+
+
+                        <tbody id="alertTable">
+
+                            <tr>
+                                <td colspan="9">
+                                    Loading fraud alerts...
+                                </td>
+                            </tr>
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            </section>
+
+        </main>
+
+    </div>
+
+
+    <!-- AUTHENTICATION -->
+
+    <script src="js/auth.js"></script>
+
+    <script>
+        // Verify the admin session before loading alert data.
+        (async function () {
+
+            const allowed = await checkLogin();
+
+            if (!allowed) {
+                return;
+            }
+
+            // Load alert functionality only after authentication.
+            const script = document.createElement("script");
+
+            script.src = "js/alert.js";
+
+            document.body.appendChild(script);
+
+        })();
+    </script>
+
+</body>
+
+</html>

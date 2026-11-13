@@ -1,0 +1,526 @@
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>FraudGuard - Transactions</title>
+
+    <link rel="stylesheet" href="css/style.css">
+
+    <style>
+        :root {
+            --bg: #07111f;
+            --sidebar: #101e30;
+            --card: #101e30;
+            --card-light: #17283d;
+            --primary: #18c8d8;
+            --secondary: #7167f9;
+            --text: #f3f7fc;
+            --muted: #9aacc1;
+            --border: rgba(255,255,255,0.09);
+            --danger: #ff5d6c;
+            --success: #25d69a;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            background: var(--bg) !important;
+            color: var(--text) !important;
+            min-height: 100vh;
+        }
+
+        .dashboard-container {
+            display: flex !important;
+            min-height: 100vh;
+            background: var(--bg) !important;
+        }
+
+        /* SIDEBAR */
+
+        .sidebar {
+            width: 255px !important;
+            min-width: 255px;
+            min-height: 100vh;
+            background: var(--sidebar) !important;
+            color: var(--text) !important;
+            padding: 30px 20px !important;
+            border-right: 1px solid var(--border);
+        }
+
+        .sidebar h2 {
+            text-align: center;
+            color: white !important;
+            font-size: 25px;
+            font-weight: 800;
+            margin-bottom: 10px;
+        }
+
+        .sidebar h2::first-letter {
+            color: white;
+        }
+
+        .admin-text {
+            text-align: center;
+            color: var(--muted) !important;
+            font-size: 13px;
+            margin-bottom: 40px;
+        }
+
+        .sidebar nav {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .sidebar nav a {
+            display: block;
+            padding: 14px 15px !important;
+            border-radius: 9px;
+            color: #b9c9dc !important;
+            font-size: 14px;
+            text-decoration: none;
+            transition: 0.3s;
+        }
+
+        .sidebar nav a:hover {
+            background: rgba(24,200,216,0.09) !important;
+            color: var(--primary) !important;
+        }
+
+        .sidebar nav a.active {
+            background: rgba(24,200,216,0.12) !important;
+            border: 1px solid rgba(24,200,216,0.25);
+            color: var(--primary) !important;
+        }
+
+        /* MAIN CONTENT */
+
+        .main-content {
+            flex: 1;
+            min-width: 0;
+            padding: 35px !important;
+            background: #0b1727 !important;
+            color: var(--text) !important;
+        }
+
+        .top-bar {
+            margin-bottom: 30px;
+        }
+
+        .top-bar h1 {
+            font-size: 30px;
+            font-weight: 800;
+            color: white !important;
+            margin-bottom: 9px;
+        }
+
+        .top-bar p {
+            color: var(--muted) !important;
+            font-size: 14px;
+        }
+
+        /* SEARCH AND FILTER */
+
+        .transaction-controls {
+            display: grid;
+            grid-template-columns: 1fr 220px;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .transaction-controls input,
+        .transaction-controls select {
+            width: 100%;
+            min-width: 0;
+            padding: 14px 16px !important;
+            background: var(--card) !important;
+            color: white !important;
+            border: 1px solid var(--border) !important;
+            border-radius: 9px !important;
+            outline: none;
+            font-size: 14px;
+        }
+
+        .transaction-controls input::placeholder {
+            color: #8498af !important;
+        }
+
+        .transaction-controls input:focus,
+        .transaction-controls select:focus {
+            border-color: var(--primary) !important;
+            box-shadow: 0 0 0 3px rgba(24,200,216,0.1);
+        }
+
+        .transaction-controls select option {
+            background: var(--card);
+            color: white;
+        }
+
+        /* TRANSACTION TABLE CARD */
+
+        .recent-section {
+            background: var(--card) !important;
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 25px !important;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 15px;
+            margin-bottom: 22px;
+        }
+
+        .section-header h2 {
+            color: white !important;
+            font-size: 21px;
+            font-weight: 700;
+        }
+
+        #transactionCount {
+            color: var(--muted) !important;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        /* TABLE */
+
+        .table-container {
+            width: 100%;
+            overflow-x: auto;
+            border-radius: 8px;
+        }
+
+        table {
+            width: 100%;
+            min-width: 850px;
+            border-collapse: collapse;
+            background: transparent !important;
+        }
+
+        thead {
+            background: #17283d !important;
+        }
+
+        th {
+            padding: 15px 13px !important;
+            text-align: left;
+            color: #dce7f3 !important;
+            font-size: 13px;
+            font-weight: 700;
+            white-space: nowrap;
+            border-bottom: 1px solid var(--border) !important;
+        }
+
+        td {
+            padding: 15px 13px !important;
+            color: #b9c9dc !important;
+            font-size: 13px;
+            border-bottom: 1px solid var(--border) !important;
+            white-space: nowrap;
+        }
+
+        tbody tr {
+            background: transparent !important;
+            transition: 0.2s;
+        }
+
+        tbody tr:hover {
+            background: rgba(24,200,216,0.06) !important;
+        }
+
+        tbody tr:last-child td {
+            border-bottom: none !important;
+        }
+
+        /* STATUS TEXT */
+
+        .status-fraud {
+            color: var(--danger) !important;
+            font-weight: 800;
+        }
+
+        .status-safe {
+            color: var(--success) !important;
+            font-weight: 800;
+        }
+
+        /* SCROLLBAR */
+
+        .table-container::-webkit-scrollbar {
+            height: 7px;
+        }
+
+        .table-container::-webkit-scrollbar-track {
+            background: #0a1727;
+            border-radius: 10px;
+        }
+
+        .table-container::-webkit-scrollbar-thumb {
+            background: #344c65;
+            border-radius: 10px;
+        }
+
+        /* RESPONSIVE */
+
+        @media (max-width: 900px) {
+            .sidebar {
+                width: 220px !important;
+                min-width: 220px;
+            }
+
+            .main-content {
+                padding: 25px !important;
+            }
+        }
+
+        @media (max-width: 650px) {
+            .dashboard-container {
+                flex-direction: column;
+            }
+
+            .sidebar {
+                width: 100% !important;
+                min-width: 0;
+                min-height: auto;
+                padding: 20px !important;
+            }
+
+            .sidebar h2 {
+                font-size: 22px;
+            }
+
+            .admin-text {
+                margin-bottom: 20px;
+            }
+
+            .sidebar nav {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 8px;
+            }
+
+            .sidebar nav a {
+                padding: 12px 10px !important;
+                font-size: 12px;
+                text-align: center;
+            }
+
+            .main-content {
+                padding: 22px 15px !important;
+            }
+
+            .top-bar h1 {
+                font-size: 25px;
+            }
+
+            .transaction-controls {
+                grid-template-columns: 1fr;
+            }
+
+            .recent-section {
+                padding: 16px !important;
+            }
+
+            .section-header {
+                align-items: flex-start;
+                flex-direction: column;
+            }
+
+            .section-header h2 {
+                font-size: 19px;
+            }
+        }
+
+        @media (max-width: 380px) {
+            .sidebar nav {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+
+</head>
+
+<body>
+
+    <div class="dashboard-container">
+
+        <!-- SIDEBAR -->
+
+        <aside class="sidebar">
+
+            <h2>🛡 Fraud<span style="color:#18c8d8;">Guard</span></h2>
+
+            <p class="admin-text">
+                Fraud Detection System
+            </p>
+
+            <nav>
+
+                <a href="dashboard.html">
+                    📊 Dashboard
+                </a>
+
+                <a href="prediction.html">
+                    🔍 Fraud Prediction
+                </a>
+
+                <a href="transactions.html" class="active">
+                    📋 Transactions
+                </a>
+
+                <a href="alert.html">
+                    🚨 Fraud Alerts
+                </a>
+
+                <a href="reports.html">
+                    📑 Reports
+                </a>
+
+                <a href="#" onclick="logout(); return false;">
+                    🚪 Logout
+                </a>
+
+            </nav>
+
+        </aside>
+
+
+        <!-- MAIN CONTENT -->
+
+        <main class="main-content">
+
+            <div class="top-bar">
+
+                <h1>Transaction History</h1>
+
+                <p>
+                    View and monitor all transaction activity
+                </p>
+
+            </div>
+
+
+            <!-- SEARCH AND FILTER -->
+
+            <section class="transaction-controls">
+
+                <input
+                    type="text"
+                    id="searchInput"
+                    placeholder="🔎 Search transactions..."
+                    autocomplete="off"
+                >
+
+                <select id="statusFilter">
+
+                    <option value="all">
+                        All Transactions
+                    </option>
+
+                    <option value="fraud">
+                        Fraud Only
+                    </option>
+
+                    <option value="safe">
+                        Safe Only
+                    </option>
+
+                </select>
+
+            </section>
+
+
+            <!-- TRANSACTION TABLE -->
+
+            <section class="recent-section">
+
+                <div class="section-header">
+
+                    <h2>All Transactions</h2>
+
+                    <span id="transactionCount">
+                        Loading...
+                    </span>
+
+                </div>
+
+
+                <div class="table-container">
+
+                    <table>
+
+                        <thead>
+
+                            <tr>
+                                <th>Transaction ID</th>
+                                <th>Amount</th>
+                                <th>Type</th>
+                                <th>Location</th>
+                                <th>Device</th>
+                                <th>Time</th>
+                                <th>Previous</th>
+                                <th>Failed</th>
+                                <th>Status</th>
+                            </tr>
+
+                        </thead>
+
+
+                        <tbody id="transactionTable">
+
+                            <tr>
+                                <td colspan="9">
+                                    Loading transactions...
+                                </td>
+                            </tr>
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            </section>
+
+        </main>
+
+    </div>
+
+
+    <!-- AUTHENTICATION -->
+
+    <script src="js/auth.js"></script>
+
+    <script>
+        // Check admin login before loading transaction data.
+        (async function () {
+
+            const allowed = await checkLogin();
+
+            if (!allowed) {
+                return;
+            }
+
+            // Load transaction JavaScript after authentication.
+            const script = document.createElement("script");
+
+            script.src = "js/transactions.js";
+
+            document.body.appendChild(script);
+
+        })();
+    </script>
+
+</body>
+
+</html>

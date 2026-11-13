@@ -1,0 +1,925 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Model Performance | FraudGuard</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Segoe UI", Arial, sans-serif;
+        }
+
+        :root {
+            --bg: #07111f;
+            --surface: #101e30;
+            --surface-light: #17283d;
+            --primary: #18c8d8;
+            --secondary: #7167f9;
+            --text: #f3f7fc;
+            --muted: #9aacc1;
+            --border: rgba(255,255,255,0.09);
+            --success: #25d69a;
+            --danger: #ff5d6c;
+            --warning: #f5bd4f;
+        }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+        }
+
+        a {
+            color: inherit;
+            text-decoration: none;
+        }
+
+        /* NAVBAR */
+
+        header {
+            background: rgba(7,17,31,0.96);
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .navbar {
+            max-width: 1200px;
+            margin: auto;
+            padding: 18px 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 25px;
+            font-weight: 800;
+        }
+
+        .logo span {
+            color: var(--primary);
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 28px;
+        }
+
+        .nav-links a {
+            color: var(--muted);
+            font-size: 14px;
+            transition: 0.3s;
+        }
+
+        .nav-links a:hover,
+        .nav-links a.active {
+            color: var(--primary);
+        }
+
+        .admin-btn {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: #07111f !important;
+            padding: 10px 18px;
+            border-radius: 7px;
+            font-weight: 700;
+        }
+
+        .menu-btn {
+            display: none;
+            background: none;
+            border: none;
+            color: white;
+            font-size: 27px;
+            cursor: pointer;
+        }
+
+        /* PAGE */
+
+        .container {
+            max-width: 1200px;
+            margin: auto;
+            padding: 55px 25px 70px;
+        }
+
+        .page-heading {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .tag {
+            display: inline-block;
+            padding: 8px 15px;
+            background: rgba(24,200,216,0.08);
+            border: 1px solid rgba(24,200,216,0.3);
+            color: var(--primary);
+            border-radius: 30px;
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            margin-bottom: 17px;
+        }
+
+        .page-heading h1 {
+            font-size: clamp(30px, 5vw, 43px);
+            margin-bottom: 14px;
+        }
+
+        .page-heading h1 span {
+            color: var(--primary);
+        }
+
+        .page-heading p {
+            color: var(--muted);
+            line-height: 1.7;
+            max-width: 700px;
+            margin: auto;
+            font-size: 14px;
+        }
+
+        /* SECTION */
+
+        .section-title {
+            margin: 38px 0 20px;
+        }
+
+        .section-title h2 {
+            font-size: 22px;
+            margin-bottom: 7px;
+        }
+
+        .section-title p {
+            color: var(--muted);
+            font-size: 13px;
+            line-height: 1.6;
+        }
+
+        /* MODEL INTRO */
+
+        .model-banner {
+            background: linear-gradient(120deg, #132b42, #20234b);
+            border: 1px solid rgba(24,200,216,0.18);
+            border-radius: 15px;
+            padding: 28px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 25px;
+        }
+
+        .model-banner h2 {
+            font-size: 23px;
+            margin-bottom: 10px;
+        }
+
+        .model-banner h2 span {
+            color: var(--primary);
+        }
+
+        .model-banner p {
+            color: #b6c6d8;
+            font-size: 13px;
+            line-height: 1.8;
+            max-width: 690px;
+        }
+
+        .model-icon {
+            min-width: 85px;
+            height: 85px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 20px;
+            background: rgba(24,200,216,0.12);
+            font-size: 40px;
+        }
+
+        /* STAT CARDS */
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 18px;
+        }
+
+        .stat-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            padding: 23px;
+            border-radius: 13px;
+            transition: 0.3s;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-4px);
+            border-color: rgba(24,200,216,0.35);
+        }
+
+        .stat-icon {
+            font-size: 22px;
+            margin-bottom: 16px;
+        }
+
+        .stat-card h3 {
+            font-size: 29px;
+            margin-bottom: 7px;
+        }
+
+        .stat-card p {
+            color: var(--muted);
+            font-size: 12px;
+        }
+
+        .stat-note {
+            display: block;
+            color: var(--primary);
+            font-size: 11px;
+            margin-top: 12px;
+        }
+
+        /* CONTENT GRID */
+
+        .content-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .panel {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 13px;
+            padding: 25px;
+        }
+
+        .panel h3 {
+            font-size: 18px;
+            margin-bottom: 8px;
+        }
+
+        .panel-description {
+            color: var(--muted);
+            font-size: 12px;
+            margin-bottom: 25px;
+            line-height: 1.6;
+        }
+
+        /* DATASET BAR */
+
+        .dataset-row {
+            margin-bottom: 23px;
+        }
+
+        .dataset-label {
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+            margin-bottom: 10px;
+            font-size: 13px;
+        }
+
+        .dataset-label span:last-child {
+            color: var(--muted);
+        }
+
+        .bar-track {
+            width: 100%;
+            height: 12px;
+            background: #25374b;
+            border-radius: 20px;
+            overflow: hidden;
+        }
+
+        .bar-fill {
+            height: 100%;
+            border-radius: 20px;
+        }
+
+        .safe-fill {
+            width: 75%;
+            background: var(--success);
+        }
+
+        .fraud-fill {
+            width: 25%;
+            background: var(--danger);
+        }
+
+        .dataset-total {
+            background: var(--surface-light);
+            border-radius: 9px;
+            padding: 17px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 27px;
+        }
+
+        .dataset-total span {
+            color: var(--muted);
+            font-size: 13px;
+        }
+
+        .dataset-total strong {
+            font-size: 21px;
+            color: var(--primary);
+        }
+
+        /* CONFUSION MATRIX */
+
+        .matrix {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 7px;
+            text-align: center;
+        }
+
+        .matrix th {
+            color: var(--muted);
+            font-size: 11px;
+            font-weight: 600;
+            padding: 10px 5px;
+        }
+
+        .matrix td {
+            padding: 22px 8px;
+            border-radius: 8px;
+            font-size: 18px;
+            font-weight: 800;
+        }
+
+        .matrix .actual {
+            font-size: 12px;
+            color: var(--muted);
+            font-weight: 600;
+        }
+
+        .matrix-safe {
+            background: rgba(37,214,154,0.15);
+            color: var(--success);
+        }
+
+        .matrix-fraud {
+            background: rgba(255,93,108,0.15);
+            color: var(--danger);
+        }
+
+        .matrix-placeholder {
+            color: var(--muted) !important;
+            font-size: 13px !important;
+            font-weight: 500 !important;
+            background: var(--surface-light);
+        }
+
+        .matrix-note {
+            margin-top: 15px;
+            font-size: 11px;
+            color: var(--muted);
+            line-height: 1.7;
+        }
+
+        /* PROCESS */
+
+        .process-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 18px;
+        }
+
+        .process-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 22px;
+        }
+
+        .process-number {
+            width: 38px;
+            height: 38px;
+            background: rgba(24,200,216,0.12);
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 9px;
+            font-weight: 800;
+            margin-bottom: 16px;
+        }
+
+        .process-card h3 {
+            font-size: 16px;
+            margin-bottom: 9px;
+        }
+
+        .process-card p {
+            color: var(--muted);
+            font-size: 12px;
+            line-height: 1.7;
+        }
+
+        /* NOTE */
+
+        .notice {
+            margin-top: 30px;
+            padding: 18px 20px;
+            background: rgba(245,189,79,0.08);
+            border: 1px solid rgba(245,189,79,0.22);
+            border-radius: 10px;
+            color: #e8d5a7;
+            font-size: 12px;
+            line-height: 1.8;
+        }
+
+        .cta {
+            margin-top: 35px;
+            text-align: center;
+            padding: 35px 20px;
+            background: linear-gradient(120deg, #122a40, #20234b);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+        }
+
+        .cta h2 {
+            font-size: 23px;
+            margin-bottom: 10px;
+        }
+
+        .cta p {
+            color: var(--muted);
+            font-size: 13px;
+            margin-bottom: 22px;
+        }
+
+        .cta a {
+            display: inline-block;
+            padding: 12px 23px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: #07111f;
+            border-radius: 7px;
+            font-size: 13px;
+            font-weight: 800;
+        }
+
+        /* FOOTER */
+
+        footer {
+            border-top: 1px solid var(--border);
+            padding: 25px;
+            text-align: center;
+            color: var(--muted);
+            font-size: 12px;
+        }
+
+        /* RESPONSIVE */
+
+        @media (max-width: 900px) {
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 700px) {
+            .content-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .process-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .model-banner {
+                align-items: flex-start;
+            }
+        }
+
+        @media (max-width: 650px) {
+            .navbar {
+                padding: 15px 18px;
+            }
+
+            .menu-btn {
+                display: block;
+            }
+
+            .nav-links {
+                display: none;
+                position: absolute;
+                top: 65px;
+                left: 0;
+                width: 100%;
+                padding: 20px;
+                background: #101e30;
+                border-bottom: 1px solid var(--border);
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 20px;
+            }
+
+            .nav-links.open {
+                display: flex;
+            }
+
+            .container {
+                padding: 38px 16px 50px;
+            }
+
+            .model-banner {
+                flex-direction: column-reverse;
+            }
+
+            .stat-card {
+                padding: 17px;
+            }
+
+            .stat-card h3 {
+                font-size: 24px;
+            }
+        }
+
+        @media (max-width: 380px) {
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- NAVBAR -->
+
+    <header>
+        <nav class="navbar">
+
+            <a href="index.html" class="logo">
+                Fraud<span>Guard</span>
+            </a>
+
+            <button class="menu-btn" id="menuBtn" aria-label="Toggle navigation">
+                ☰
+            </button>
+
+            <div class="nav-links" id="navLinks">
+                <a href="index.html">Home</a>
+                <a href="prediction.html">Check Transaction</a>
+                <a href="model-performance.html" class="active">Model Performance</a>
+                <a href="index.html#about">About</a>
+                <a href="login.html" class="admin-btn">Admin Login</a>
+            </div>
+
+        </nav>
+    </header>
+
+    <!-- MAIN CONTENT -->
+
+    <main class="container">
+
+        <section class="page-heading">
+            <span class="tag">MACHINE LEARNING ANALYTICS</span>
+
+            <h1>
+                Model <span>Performance</span>
+            </h1>
+
+            <p>
+                Explore the machine learning approach, dataset distribution
+                and evaluation information behind the FraudGuard transaction
+                fraud detection system.
+            </p>
+        </section>
+
+        <!-- MODEL INTRODUCTION -->
+
+        <section class="model-banner">
+
+            <div>
+                <h2>
+                    Random Forest <span>Classifier</span>
+                </h2>
+
+                <p>
+                    FraudGuard uses a Random Forest classification model
+                    to analyse transaction information and identify
+                    potentially fraudulent activity. The model evaluates
+                    transaction features and produces a prediction that
+                    supports fraud-risk assessment.
+                </p>
+            </div>
+
+            <div class="model-icon">🤖</div>
+
+        </section>
+
+        <!-- DATASET OVERVIEW -->
+
+        <section class="section-title">
+            <h2>Dataset Overview</h2>
+            <p>Summary of the synthetic dataset used in this project.</p>
+        </section>
+
+        <div class="stats-grid">
+
+            <div class="stat-card">
+                <div class="stat-icon">📊</div>
+                <h3>1,200</h3>
+                <p>Total Transactions</p>
+                <span class="stat-note">Training dataset size</span>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon">🟢</div>
+                <h3>900</h3>
+                <p>Safe Transactions</p>
+                <span class="stat-note">75% of dataset</span>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon">🔴</div>
+                <h3>300</h3>
+                <p>Fraud Transactions</p>
+                <span class="stat-note">25% of dataset</span>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon">🌳</div>
+                <h3>Random Forest</h3>
+                <p>Machine Learning Algorithm</p>
+                <span class="stat-note">Classification model</span>
+            </div>
+
+        </div>
+
+        <!-- DATASET AND CONFUSION MATRIX -->
+
+        <section class="section-title">
+            <h2>Dataset Analysis</h2>
+            <p>Visual representation of the transaction dataset.</p>
+        </section>
+
+        <div class="content-grid">
+
+            <!-- DATASET DISTRIBUTION -->
+
+            <div class="panel">
+
+                <h3>Transaction Distribution</h3>
+
+                <p class="panel-description">
+                    Distribution of safe and fraudulent transactions
+                    in the generated dataset.
+                </p>
+
+                <div class="dataset-row">
+
+                    <div class="dataset-label">
+                        <span>Safe Transactions</span>
+                        <span>900 (75%)</span>
+                    </div>
+
+                    <div class="bar-track">
+                        <div class="bar-fill safe-fill"></div>
+                    </div>
+
+                </div>
+
+                <div class="dataset-row">
+
+                    <div class="dataset-label">
+                        <span>Fraud Transactions</span>
+                        <span>300 (25%)</span>
+                    </div>
+
+                    <div class="bar-track">
+                        <div class="bar-fill fraud-fill"></div>
+                    </div>
+
+                </div>
+
+                <div class="dataset-total">
+                    <span>Total Dataset Records</span>
+                    <strong>1,200</strong>
+                </div>
+
+            </div>
+
+            <!-- CONFUSION MATRIX -->
+
+            <div class="panel">
+
+                <h3>Confusion Matrix</h3>
+
+                <p class="panel-description">
+                    A confusion matrix compares actual classifications
+                    with model predictions.
+                </p>
+
+                <table class="matrix">
+
+                    <thead>
+                        <tr>
+                            <th></th>
+                            <th>Predicted Safe</th>
+                            <th>Predicted Fraud</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        <tr>
+                            <td class="actual">Actual Safe</td>
+                            <td class="matrix-placeholder">Run evaluation</td>
+                            <td class="matrix-placeholder">Run evaluation</td>
+                        </tr>
+
+                        <tr>
+                            <td class="actual">Actual Fraud</td>
+                            <td class="matrix-placeholder">Run evaluation</td>
+                            <td class="matrix-placeholder">Run evaluation</td>
+                        </tr>
+                    </tbody>
+
+                </table>
+
+                <p class="matrix-note">
+                    Exact confusion matrix values are not displayed because
+                    the latest evaluation results have not yet been connected
+                    to this page.
+                </p>
+
+            </div>
+
+        </div>
+
+        <!-- MODEL EVALUATION -->
+
+        <section class="section-title">
+            <h2>Model Evaluation Metrics</h2>
+            <p>
+                Important measurements used to evaluate a classification model.
+            </p>
+        </section>
+
+        <div class="content-grid">
+
+            <div class="panel">
+
+                <h3>Accuracy</h3>
+
+                <p class="panel-description">
+                    Measures the proportion of all predictions that are
+                    correct.
+                </p>
+
+                <div class="dataset-total">
+                    <span>Latest evaluation result</span>
+                    <strong>Not connected</strong>
+                </div>
+
+                <p class="matrix-note">
+                    Accuracy = (Correct Predictions / Total Predictions) × 100
+                </p>
+
+            </div>
+
+            <div class="panel">
+
+                <h3>Precision, Recall and F1-Score</h3>
+
+                <p class="panel-description">
+                    These metrics help evaluate how effectively the model
+                    identifies fraudulent transactions.
+                </p>
+
+                <div class="dataset-row">
+                    <div class="dataset-label">
+                        <span>Precision</span>
+                        <span>Awaiting evaluation</span>
+                    </div>
+                </div>
+
+                <div class="dataset-row">
+                    <div class="dataset-label">
+                        <span>Recall</span>
+                        <span>Awaiting evaluation</span>
+                    </div>
+                </div>
+
+                <div class="dataset-row">
+                    <div class="dataset-label">
+                        <span>F1-Score</span>
+                        <span>Awaiting evaluation</span>
+                    </div>
+                </div>
+
+                <p class="matrix-note">
+                    These values should be filled using the actual output
+                    from the model evaluation script.
+                </p>
+
+            </div>
+
+        </div>
+
+        <!-- HOW MODEL WORKS -->
+
+        <section class="section-title">
+            <h2>How the Model Works</h2>
+            <p>
+                Main stages involved in transaction fraud classification.
+            </p>
+        </section>
+
+        <div class="process-grid">
+
+            <div class="process-card">
+                <div class="process-number">01</div>
+                <h3>Data Collection</h3>
+                <p>
+                    Transaction information is collected, including amount,
+                    transaction type, location, device and transaction time.
+                </p>
+            </div>
+
+            <div class="process-card">
+                <div class="process-number">02</div>
+                <h3>Data Processing</h3>
+                <p>
+                    Transaction features are prepared and transformed into
+                    the format required by the machine learning model.
+                </p>
+            </div>
+
+            <div class="process-card">
+                <div class="process-number">03</div>
+                <h3>Fraud Prediction</h3>
+                <p>
+                    The Random Forest model analyses the input and returns
+                    a predicted transaction category and risk information.
+                </p>
+            </div>
+
+        </div>
+
+        <!-- IMPORTANT NOTE -->
+
+        <div class="notice">
+            <strong>Research and evaluation note:</strong>
+            The dataset used in this project is synthetically generated.
+            Its distribution and performance results should not be treated
+            as proof of real-world banking fraud detection accuracy.
+            Actual accuracy, precision, recall, F1-score and confusion matrix
+            values must be obtained from the latest independent test
+            evaluation before being presented as model results.
+        </div>
+
+        <!-- CTA -->
+
+        <section class="cta">
+
+            <h2>Try FraudGuard Prediction</h2>
+
+            <p>
+                Submit sample transaction details and see the machine
+                learning model's prediction.
+            </p>
+
+            <a href="prediction.html">
+                Check a Transaction →
+            </a>
+
+        </section>
+
+    </main>
+
+    <!-- FOOTER -->
+
+    <footer>
+        © 2026 FraudGuard. Fraud Detection and Monitoring System.
+        <br><br>
+        An educational machine-learning demonstration.
+    </footer>
+
+    <script>
+        // Mobile navigation
+        const menuBtn = document.getElementById("menuBtn");
+        const navLinks = document.getElementById("navLinks");
+
+        menuBtn.addEventListener("click", function () {
+            navLinks.classList.toggle("open");
+        });
+
+        navLinks.querySelectorAll("a").forEach(function (link) {
+            link.addEventListener("click", function () {
+                navLinks.classList.remove("open");
+            });
+        });
+    </script>
+
+</body>
+</html>

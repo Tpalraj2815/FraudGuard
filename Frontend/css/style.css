@@ -1,0 +1,853 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+
+body {
+
+    font-family: Arial, sans-serif;
+
+    background: linear-gradient(
+        135deg,
+        #0f172a,
+        #1e3a8a
+    );
+
+    min-height: 100vh;
+
+    display: flex;
+
+    justify-content: center;
+
+    align-items: center;
+
+    padding: 20px;
+
+}
+
+
+.prediction-container {
+
+    width: 100%;
+
+    max-width: 600px;
+
+    background: white;
+
+    padding: 30px;
+
+    border-radius: 15px;
+
+    box-shadow:
+        0 10px 30px rgba(
+            0,
+            0,
+            0,
+            0.3
+        );
+
+}
+
+
+.prediction-container h1 {
+
+    text-align: center;
+
+    color: #1e3a8a;
+
+    margin-bottom: 10px;
+
+}
+
+
+.prediction-container h2 {
+
+    text-align: center;
+
+    margin-bottom: 10px;
+
+}
+
+
+.prediction-container p {
+
+    text-align: center;
+
+    color: #555;
+
+    margin-bottom: 25px;
+
+}
+
+
+label {
+
+    display: block;
+
+    margin-top: 15px;
+
+    margin-bottom: 6px;
+
+    font-weight: bold;
+
+}
+
+
+input,
+select {
+
+    width: 100%;
+
+    padding: 12px;
+
+    border: 1px solid #ccc;
+
+    border-radius: 8px;
+
+    font-size: 16px;
+
+}
+
+
+button {
+
+    width: 100%;
+
+    margin-top: 25px;
+
+    padding: 14px;
+
+    border: none;
+
+    border-radius: 8px;
+
+    background: #1e3a8a;
+
+    color: white;
+
+    font-size: 16px;
+
+    font-weight: bold;
+
+    cursor: pointer;
+
+}
+
+
+button:hover {
+
+    background: #2563eb;
+
+}
+
+
+.result-box {
+
+    margin-top: 25px;
+
+    padding: 20px;
+
+    border-radius: 10px;
+
+    text-align: center;
+
+    background: #f1f5f9;
+
+}
+
+
+.result-box h2 {
+
+    margin-bottom: 15px;
+
+}
+
+
+@media (max-width: 600px) {
+
+    .prediction-container {
+
+        padding: 20px;
+
+    }
+
+}
+/* =========================================
+   FRAUDGUARD DASHBOARD
+========================================= */
+
+.dashboard-container {
+    min-height: 100vh;
+    display: flex;
+    background: #f1f5f9;
+}
+
+
+/* Sidebar */
+
+.sidebar {
+    width: 250px;
+    min-height: 100vh;
+    background: #0f172a;
+    color: white;
+    padding: 25px 15px;
+}
+
+.sidebar h2 {
+    text-align: center;
+    margin-bottom: 8px;
+}
+
+.admin-text {
+    text-align: center;
+    color: #94a3b8;
+    font-size: 13px;
+    margin-bottom: 30px;
+}
+
+.sidebar nav {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.sidebar nav a {
+    color: #cbd5e1;
+    text-decoration: none;
+    padding: 13px 15px;
+    border-radius: 8px;
+    display: block;
+}
+
+.sidebar nav a:hover,
+.sidebar nav a.active {
+    background: #2563eb;
+    color: white;
+}
+
+
+/* Main Content */
+
+.main-content {
+    flex: 1;
+    padding: 30px;
+    overflow-x: auto;
+}
+
+.top-bar {
+    margin-bottom: 30px;
+}
+
+.top-bar h1 {
+    color: #0f172a;
+    margin-bottom: 8px;
+}
+
+.top-bar p {
+    color: #64748b;
+}
+
+
+/* Statistics */
+
+.stats-grid {
+    display: grid;
+    grid-template-columns:
+        repeat(4, 1fr);
+
+    gap: 20px;
+
+    margin-bottom: 25px;
+}
+
+.stat-card {
+    background: white;
+    padding: 22px;
+    border-radius: 12px;
+
+    display: flex;
+    align-items: center;
+    gap: 18px;
+
+    box-shadow:
+        0 4px 15px rgba(0, 0, 0, 0.08);
+}
+
+.stat-icon {
+    font-size: 35px;
+}
+
+.stat-card h3 {
+    font-size: 14px;
+    color: #64748b;
+    margin-bottom: 8px;
+}
+
+.stat-card p {
+    font-size: 28px;
+    font-weight: bold;
+    color: #0f172a;
+}
+
+.fraud-card p {
+    color: #dc2626;
+}
+
+.safe-card p {
+    color: #16a34a;
+}
+
+.percentage-card p {
+    color: #2563eb;
+}
+
+
+/* Charts */
+
+.charts-grid {
+    display: grid;
+    grid-template-columns:
+        repeat(2, 1fr);
+
+    gap: 20px;
+
+    margin-bottom: 25px;
+}
+
+.chart-card {
+    background: white;
+    padding: 25px;
+    border-radius: 12px;
+
+    box-shadow:
+        0 4px 15px rgba(0, 0, 0, 0.08);
+}
+
+.chart-card h2 {
+    margin-bottom: 20px;
+    color: #0f172a;
+}
+
+
+/* Recent Transactions */
+
+.recent-section {
+    background: white;
+    padding: 25px;
+    border-radius: 12px;
+
+    box-shadow:
+        0 4px 15px rgba(0, 0, 0, 0.08);
+}
+
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    margin-bottom: 20px;
+}
+
+.section-header a {
+    text-decoration: none;
+    color: #2563eb;
+    font-weight: bold;
+}
+
+.table-container {
+    overflow-x: auto;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th,
+td {
+    padding: 13px;
+    text-align: left;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+th {
+    background: #f8fafc;
+    color: #334155;
+}
+
+td {
+    color: #475569;
+}
+
+
+/* Mobile */
+
+@media (max-width: 1000px) {
+
+    .stats-grid {
+        grid-template-columns:
+            repeat(2, 1fr);
+    }
+
+    .charts-grid {
+        grid-template-columns: 1fr;
+    }
+
+}
+
+
+@media (max-width: 700px) {
+
+    .dashboard-container {
+        flex-direction: column;
+    }
+
+    .sidebar {
+        width: 100%;
+        min-height: auto;
+    }
+
+    .sidebar nav {
+        flex-direction: row;
+        overflow-x: auto;
+    }
+
+    .sidebar nav a {
+        white-space: nowrap;
+    }
+
+    .main-content {
+        padding: 15px;
+    }
+
+    .stats-grid {
+        grid-template-columns: 1fr;
+    }
+
+}
+/* =========================================
+   TRANSACTIONS PAGE
+========================================= */
+
+.transaction-controls {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 25px;
+}
+
+.transaction-controls input {
+    flex: 1;
+    padding: 13px;
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+    font-size: 15px;
+}
+
+.transaction-controls select {
+    width: 220px;
+    padding: 13px;
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+    font-size: 15px;
+    background: white;
+}
+
+.fraud-status {
+    color: #dc2626;
+    font-weight: bold;
+}
+
+.safe-status {
+    color: #16a34a;
+    font-weight: bold;
+}
+
+#transactionCount {
+    color: #64748b;
+    font-weight: bold;
+}
+
+
+/* Mobile */
+
+@media (max-width: 700px) {
+
+    .transaction-controls {
+        flex-direction: column;
+    }
+
+    .transaction-controls select {
+        width: 100%;
+    }
+
+}
+/* =========================================
+   FRAUD ALERTS
+========================================= */
+
+.high-risk {
+    color: #dc2626;
+    font-weight: bold;
+}
+
+#fraudCount {
+    color: #dc2626;
+}
+
+#fraudAmount {
+    color: #dc2626;
+}
+
+#highRiskCount {
+    color: #dc2626;
+}
+
+#topLocation {
+    color: #2563eb;
+    font-size: 20px;
+}
+
+
+/* Alert row */
+
+#alertTable tr:hover {
+    background: #fff7ed;
+}
+
+
+/* Alert search */
+
+#alertSearch {
+    width: 100%;
+}
+
+
+/* Mobile */
+
+@media (max-width: 700px) {
+
+    #topLocation {
+        font-size: 18px;
+    }
+
+}
+/* =========================================
+   REPORTS PAGE
+========================================= */
+
+.report-summary-card {
+    background: white;
+
+    padding: 25px;
+
+    border-radius: 12px;
+
+    margin-bottom: 25px;
+
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+    box-shadow:
+        0 4px 15px rgba(0, 0, 0, 0.08);
+}
+
+.report-summary-card h2 {
+    color: #0f172a;
+
+    margin-bottom: 10px;
+}
+
+.report-summary-card p {
+    color: #dc2626;
+
+    font-size: 28px;
+
+    font-weight: bold;
+}
+
+.report-summary-card button {
+    width: auto;
+
+    margin-top: 0;
+
+    padding: 13px 22px;
+
+    background: #2563eb;
+
+    color: white;
+
+    border: none;
+
+    border-radius: 8px;
+
+    font-size: 15px;
+
+    font-weight: bold;
+
+    cursor: pointer;
+}
+
+.report-summary-card button:hover {
+    background: #1d4ed8;
+}
+
+
+/* =========================================
+   PROFESSIONAL LOGIN PAGE
+========================================= */
+
+.login-container {
+    min-height: 100vh;
+
+    display: flex;
+
+    justify-content: center;
+
+    align-items: center;
+
+    padding: 30px;
+
+    background: #eef3f8;
+}
+
+
+/* Login Card */
+
+.login-card {
+    width: 100%;
+
+    max-width: 430px;
+
+    background: #ffffff;
+
+    padding: 40px;
+
+    border-radius: 14px;
+
+    border: 1px solid #d9e2ec;
+
+    box-shadow:
+        0 12px 35px
+        rgba(15, 23, 42, 0.12);
+}
+
+
+/* FraudGuard Logo */
+
+.login-card h1 {
+    text-align: center;
+
+    color: #123b63;
+
+    font-size: 30px;
+
+    margin-bottom: 8px;
+}
+
+
+/* Admin Login */
+
+.login-card h2 {
+    text-align: center;
+
+    color: #1e293b;
+
+    font-size: 22px;
+
+    margin-bottom: 8px;
+}
+
+
+/* Description */
+
+.login-card > p {
+    text-align: center;
+
+    color: #64748b;
+
+    font-size: 14px;
+
+    margin-bottom: 28px;
+}
+
+
+/* Labels */
+
+.login-card label {
+    display: block;
+
+    margin-top: 18px;
+
+    margin-bottom: 7px;
+
+    color: #334155;
+
+    font-size: 14px;
+
+    font-weight: 600;
+}
+
+
+/* Login Inputs */
+
+.login-card input {
+    width: 100%;
+
+    padding: 13px 14px;
+
+    border: 1px solid #cbd5e1;
+
+    border-radius: 7px;
+
+    background: #f8fafc;
+
+    color: #1e293b;
+
+    font-size: 15px;
+
+    outline: none;
+
+    transition: 0.2s;
+}
+
+
+/* Input Focus */
+
+.login-card input:focus {
+    border-color: #2563eb;
+
+    background: #ffffff;
+
+    box-shadow:
+        0 0 0 3px
+        rgba(37, 99, 235, 0.10);
+}
+
+
+/* Login Button */
+
+.login-card button {
+    width: 100%;
+
+    margin-top: 28px;
+
+    padding: 14px;
+
+    border: none;
+
+    border-radius: 7px;
+
+    background: #123b63;
+
+    color: #ffffff;
+
+    font-size: 15px;
+
+    font-weight: 600;
+
+    letter-spacing: 0.5px;
+
+    cursor: pointer;
+
+    transition: 0.2s;
+}
+
+
+/* Button Hover */
+
+.login-card button:hover {
+    background: #1d4f7d;
+
+    transform: translateY(-1px);
+}
+
+
+/* Login Message */
+
+.login-message {
+    min-height: 22px;
+
+    text-align: center;
+
+    margin-top: 15px;
+
+    color: #dc2626;
+
+    font-size: 14px;
+
+    font-weight: 600;
+}
+
+
+/* Demo Login */
+
+.demo-login {
+    margin-top: 25px;
+
+    padding: 15px;
+
+    background: #f1f5f9;
+
+    border: 1px solid #e2e8f0;
+
+    border-radius: 8px;
+
+    text-align: center;
+
+    color: #64748b;
+
+    font-size: 14px;
+
+    line-height: 1.7;
+}
+
+
+.demo-login strong {
+    color: #334155;
+}
+
+
+.demo-login b {
+    color: #123b63;
+}
+
+
+/* Login Page Background */
+
+body:has(.login-container) {
+    background: #eef3f8;
+
+    display: block;
+
+    min-height: 100vh;
+
+    padding: 0;
+}
+
+
+/* Login Mobile */
+
+@media (max-width: 500px) {
+
+    .login-container {
+        padding: 15px;
+    }
+
+    .login-card {
+        padding: 28px 22px;
+    }
+
+    .login-card h1 {
+        font-size: 26px;
+    }
+
+    .login-card h2 {
+        font-size: 20px;
+    }
+
+}

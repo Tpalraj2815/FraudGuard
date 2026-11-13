@@ -1,0 +1,1177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Check Transaction | FraudGuard</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Segoe UI", Arial, sans-serif;
+        }
+
+        :root {
+            --bg: #07111f;
+            --surface: #101e30;
+            --surface-light: #17283d;
+            --primary: #18c8d8;
+            --secondary: #7167f9;
+            --text: #f3f7fc;
+            --muted: #9aacc1;
+            --border: rgba(255,255,255,0.09);
+            --danger: #ff5d6c;
+            --success: #25d69a;
+        }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        header {
+            width: 100%;
+            background: rgba(7,17,31,0.95);
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .navbar {
+            max-width: 1200px;
+            margin: auto;
+            padding: 18px 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 25px;
+            font-weight: 800;
+            color: white;
+        }
+
+        .logo span {
+            color: var(--primary);
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 28px;
+        }
+
+        .nav-links a {
+            color: var(--muted);
+            font-size: 14px;
+            transition: 0.3s;
+        }
+
+        .nav-links a:hover,
+        .nav-links a.active {
+            color: var(--primary);
+        }
+
+        .admin-btn {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: #07111f !important;
+            padding: 10px 18px;
+            border-radius: 7px;
+            font-weight: 700;
+        }
+
+        .menu-btn {
+            display: none;
+            background: none;
+            border: none;
+            color: white;
+            font-size: 27px;
+            cursor: pointer;
+        }
+
+        .page-container {
+            max-width: 1200px;
+            margin: auto;
+            padding: 55px 25px 70px;
+        }
+
+        .page-heading {
+            text-align: center;
+            margin-bottom: 38px;
+        }
+
+        .tag {
+            display: inline-block;
+            padding: 8px 15px;
+            border: 1px solid rgba(24,200,216,0.3);
+            background: rgba(24,200,216,0.08);
+            color: var(--primary);
+            border-radius: 30px;
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            margin-bottom: 17px;
+        }
+
+        .page-heading h1 {
+            font-size: clamp(30px, 5vw, 43px);
+            margin-bottom: 14px;
+        }
+
+        .page-heading h1 span {
+            color: var(--primary);
+        }
+
+        .page-heading p {
+            color: var(--muted);
+            line-height: 1.7;
+            max-width: 650px;
+            margin: auto;
+            font-size: 15px;
+        }
+
+        .main-grid {
+            display: grid;
+            grid-template-columns: 1.5fr 0.8fr;
+            gap: 25px;
+            align-items: start;
+        }
+
+        .form-card,
+        .info-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 15px;
+            padding: 30px;
+        }
+
+        .card-heading {
+            margin-bottom: 25px;
+        }
+
+        .card-heading h2 {
+            font-size: 21px;
+            margin-bottom: 8px;
+        }
+
+        .card-heading p {
+            color: var(--muted);
+            font-size: 13px;
+            line-height: 1.6;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 3px;
+        }
+
+        .form-group.full {
+            grid-column: 1 / -1;
+        }
+
+        label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 9px;
+            color: #dce7f3;
+        }
+
+        input,
+        select {
+            width: 100%;
+            padding: 13px 14px;
+            background: #0a1727;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: white;
+            outline: none;
+            font-size: 14px;
+            transition: 0.3s;
+        }
+
+        input:focus,
+        select:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(24,200,216,0.1);
+        }
+
+        input::placeholder {
+            color: #65788e;
+        }
+
+        select option {
+            background: #101e30;
+            color: white;
+        }
+
+        .input-help {
+            display: block;
+            color: #8194a9;
+            font-size: 11px;
+            margin-top: 7px;
+        }
+
+        .submit-btn {
+            width: 100%;
+            margin-top: 25px;
+            padding: 15px;
+            border: none;
+            border-radius: 8px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: #07111f;
+            font-size: 15px;
+            font-weight: 800;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(24,200,216,0.2);
+        }
+
+        .submit-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .info-card h3 {
+            font-size: 19px;
+            margin-bottom: 20px;
+        }
+
+        .info-item {
+            display: flex;
+            gap: 14px;
+            margin-bottom: 23px;
+        }
+
+        .info-icon {
+            min-width: 42px;
+            height: 42px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(24,200,216,0.1);
+            border-radius: 10px;
+            font-size: 20px;
+        }
+
+        .info-item h4 {
+            font-size: 14px;
+            margin-bottom: 6px;
+        }
+
+        .info-item p {
+            color: var(--muted);
+            font-size: 12px;
+            line-height: 1.6;
+        }
+
+        .security-note {
+            margin-top: 12px;
+            background: rgba(113,103,249,0.1);
+            border: 1px solid rgba(113,103,249,0.2);
+            padding: 16px;
+            border-radius: 9px;
+            color: #c6c3ff;
+            font-size: 12px;
+            line-height: 1.7;
+        }
+
+        .result-card {
+            display: none;
+            margin-top: 25px;
+            padding: 25px;
+            border-radius: 13px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+        }
+
+        .result-card.show {
+            display: block;
+        }
+
+        .result-card.safe {
+            border-color: rgba(37,214,154,0.45);
+        }
+
+        .result-card.fraud,
+        .result-card.error {
+            border-color: rgba(255,93,108,0.5);
+        }
+
+        .result-top {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            margin-bottom: 18px;
+        }
+
+        .result-icon {
+            width: 48px;
+            height: 48px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-radius: 50%;
+            font-size: 23px;
+            background: rgba(37,214,154,0.12);
+        }
+
+        .safe .result-icon {
+            background: rgba(37,214,154,0.12);
+        }
+
+        .fraud .result-icon,
+        .error .result-icon {
+            background: rgba(255,93,108,0.12);
+        }
+
+        .result-top h3 {
+            font-size: 19px;
+            margin-bottom: 5px;
+        }
+
+        .safe .result-top h3 {
+            color: var(--success);
+        }
+
+        .fraud .result-top h3,
+        .error .result-top h3 {
+            color: var(--danger);
+        }
+
+        .result-top p {
+            font-size: 12px;
+            color: var(--muted);
+        }
+
+        .result-details {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-top: 20px;
+        }
+
+        .result-detail {
+            padding: 15px;
+            border-radius: 8px;
+            background: #0a1727;
+        }
+
+        .result-detail span {
+            display: block;
+            color: var(--muted);
+            font-size: 12px;
+            margin-bottom: 8px;
+        }
+
+        .result-detail strong {
+            font-size: 18px;
+        }
+
+        .probability-track {
+            height: 9px;
+            background: #26374b;
+            border-radius: 20px;
+            overflow: hidden;
+            margin-top: 15px;
+        }
+
+        .probability-fill {
+            height: 100%;
+            width: 0%;
+            border-radius: 20px;
+            background: var(--primary);
+            transition: width 0.5s ease;
+        }
+
+        .safe .probability-fill {
+            background: var(--success);
+        }
+
+        .fraud .probability-fill {
+            background: var(--danger);
+        }
+
+        .result-message {
+            margin-top: 18px;
+            color: #c3d0df;
+            font-size: 13px;
+            line-height: 1.7;
+        }
+
+        .disclaimer {
+            margin-top: 18px;
+            padding: 13px;
+            border-radius: 8px;
+            background: rgba(255,255,255,0.04);
+            color: var(--muted);
+            font-size: 11px;
+            line-height: 1.7;
+        }
+
+        .loading {
+            display: inline-block;
+            width: 17px;
+            height: 17px;
+            border: 2px solid rgba(7,17,31,0.3);
+            border-top-color: #07111f;
+            border-radius: 50%;
+            animation: spin 0.7s linear infinite;
+            vertical-align: middle;
+            margin-right: 8px;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        footer {
+            border-top: 1px solid var(--border);
+            padding: 25px;
+            text-align: center;
+            color: var(--muted);
+            font-size: 12px;
+        }
+
+        @media (max-width: 850px) {
+            .main-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .info-card {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 15px;
+            }
+
+            .info-card h3,
+            .security-note {
+                grid-column: 1 / -1;
+            }
+        }
+
+        @media (max-width: 650px) {
+            .navbar {
+                padding: 15px 18px;
+            }
+
+            .menu-btn {
+                display: block;
+            }
+
+            .nav-links {
+                display: none;
+                position: absolute;
+                top: 65px;
+                left: 0;
+                width: 100%;
+                padding: 20px;
+                background: #101e30;
+                border-bottom: 1px solid var(--border);
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 20px;
+            }
+
+            .nav-links.open {
+                display: flex;
+            }
+
+            .page-container {
+                padding: 38px 16px 50px;
+            }
+
+            .form-card,
+            .info-card {
+                padding: 21px;
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .form-group.full {
+                grid-column: auto;
+            }
+
+            .info-card {
+                display: block;
+            }
+
+            .result-details {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        @media (max-width: 380px) {
+            .result-details {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- NAVBAR -->
+
+    <header>
+        <nav class="navbar">
+            <a href="index.html" class="logo">
+                Fraud<span>Guard</span>
+            </a>
+
+            <button class="menu-btn" id="menuBtn" aria-label="Toggle navigation">
+                ☰
+            </button>
+
+            <div class="nav-links" id="navLinks">
+                <a href="index.html">Home</a>
+                <a href="prediction.html" class="active">Check Transaction</a>
+                <a href="index.html#about">About</a>
+                <a href="index.html#how-it-works">How It Works</a>
+
+                <!-- Changes automatically based on admin session -->
+                <a href="login.html" class="admin-btn" id="adminNavLink">
+                    Admin Login
+                </a>
+            </div>
+        </nav>
+    </header>
+
+    <!-- MAIN PAGE -->
+
+    <main class="page-container">
+
+        <section class="page-heading">
+            <span class="tag">AI-POWERED FRAUD DETECTION</span>
+
+            <h1>
+                Check Your <span>Transaction</span>
+            </h1>
+
+            <p>
+                Enter the transaction details below. FraudGuard will analyse
+                the information using its machine learning model and estimate
+                the possibility of fraudulent activity.
+            </p>
+        </section>
+
+        <div class="main-grid">
+
+            <!-- PREDICTION FORM -->
+
+            <section class="form-card">
+
+                <div class="card-heading">
+                    <h2>Transaction Details</h2>
+                    <p>
+                        Provide the transaction information to receive a
+                        fraud-risk prediction.
+                    </p>
+                </div>
+
+                <form id="predictionForm">
+
+                    <div class="form-grid">
+
+                        <div class="form-group">
+                            <label for="amount">Transaction Amount (₹)</label>
+
+                            <input
+                                type="number"
+                                id="amount"
+                                name="amount"
+                                placeholder="Example: 15000"
+                                min="0.01"
+                                step="0.01"
+                                required
+                            >
+
+                            <span class="input-help">
+                                Enter the transaction amount.
+                            </span>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="transaction_type">
+                                Transaction Type
+                            </label>
+
+                            <select
+                                id="transaction_type"
+                                name="transaction_type"
+                                required
+                            >
+                                <option value="">Select transaction type</option>
+                                <option value="Online">Online</option>
+                                <option value="ATM">ATM</option>
+                                <option value="POS">POS</option>
+                                <option value="Mobile">Mobile</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="location">Transaction Location</label>
+
+                            <select
+                                id="location"
+                                name="location"
+                                required
+                            >
+                                <option value="">Select location</option>
+                                <option value="Mumbai">Mumbai</option>
+                                <option value="Delhi">Delhi</option>
+                                <option value="Bangalore">Bangalore</option>
+                                <option value="Chennai">Chennai</option>
+                                <option value="Hyderabad">Hyderabad</option>
+                                <option value="Kolkata">Kolkata</option>
+                                <option value="Unknown">Unknown</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="device_type">Device Type</label>
+
+                            <select
+                                id="device_type"
+                                name="device_type"
+                                required
+                            >
+                                <option value="">Select device</option>
+                                <option value="Mobile">Mobile</option>
+                                <option value="Desktop">Desktop</option>
+                                <option value="Tablet">Tablet</option>
+                                <option value="Unknown">Unknown</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="transaction_time">
+                                Transaction Time
+                            </label>
+
+                            <input
+                                type="time"
+                                id="transaction_time"
+                                name="transaction_time"
+                                required
+                            >
+                        </div>
+
+                        <div class="form-group">
+                            <label for="previous_transactions">
+                                Previous Transactions
+                            </label>
+
+                            <input
+                                type="number"
+                                id="previous_transactions"
+                                name="previous_transactions"
+                                placeholder="Example: 10"
+                                min="0"
+                                step="1"
+                                required
+                            >
+                        </div>
+
+                        <div class="form-group full">
+                            <label for="failed_attempts">
+                                Failed Transaction Attempts
+                            </label>
+
+                            <input
+                                type="number"
+                                id="failed_attempts"
+                                name="failed_attempts"
+                                placeholder="Example: 2"
+                                min="0"
+                                step="1"
+                                required
+                            >
+
+                            <span class="input-help">
+                                Enter the number of failed attempts associated
+                                with this transaction.
+                            </span>
+                        </div>
+
+                    </div>
+
+                    <button type="submit" class="submit-btn" id="submitBtn">
+                        Analyse Transaction →
+                    </button>
+
+                </form>
+
+                <!-- RESULT AREA -->
+
+                <section
+                    class="result-card"
+                    id="resultCard"
+                    aria-live="polite"
+                    aria-atomic="true"
+                >
+
+                    <div class="result-top">
+                        <div class="result-icon" id="resultIcon">✓</div>
+
+                        <div>
+                            <h3 id="resultTitle">Prediction Result</h3>
+                            <p id="resultSubtitle">
+                                Transaction analysis completed.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="result-details">
+
+                        <div class="result-detail">
+                            <span>Prediction</span>
+                            <strong id="predictionValue">-</strong>
+                        </div>
+
+                        <div class="result-detail">
+                            <span>Risk Level</span>
+                            <strong id="riskValue">-</strong>
+                        </div>
+
+                        <div class="result-detail">
+                            <span>Fraud Probability</span>
+                            <strong id="probabilityValue">-</strong>
+                        </div>
+
+                        <div class="result-detail">
+                            <span>Analysis Status</span>
+                            <strong id="statusValue">-</strong>
+                        </div>
+
+                    </div>
+
+                    <div class="probability-track">
+                        <div class="probability-fill" id="probabilityFill"></div>
+                    </div>
+
+                    <p class="result-message" id="resultMessage"></p>
+
+                    <div class="disclaimer">
+                        <strong>Important:</strong> This is an automated
+                        machine-learning estimate based on the supplied
+                        transaction details. It is not a guarantee that a
+                        transaction is safe or fraudulent. Do not use this
+                        result as the sole basis for a financial decision.
+                    </div>
+
+                </section>
+
+            </section>
+
+            <!-- INFORMATION PANEL -->
+
+            <aside class="info-card">
+
+                <h3>How FraudGuard Works</h3>
+
+                <div class="info-item">
+                    <div class="info-icon">📝</div>
+
+                    <div>
+                        <h4>1. Enter Details</h4>
+                        <p>
+                            Provide the transaction amount, type, location,
+                            device and other required information.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="info-item">
+                    <div class="info-icon">🤖</div>
+
+                    <div>
+                        <h4>2. AI Analysis</h4>
+                        <p>
+                            The machine learning model analyses the
+                            transaction information.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="info-item">
+                    <div class="info-icon">📊</div>
+
+                    <div>
+                        <h4>3. View Prediction</h4>
+                        <p>
+                            Receive the predicted transaction category,
+                            risk level and fraud probability.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="info-item">
+                    <div class="info-icon">🛡️</div>
+
+                    <div>
+                        <h4>4. Review the Result</h4>
+                        <p>
+                            Use the result as an additional risk indicator.
+                            It does not replace bank verification.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="security-note">
+                    🔒 <strong>Security Notice</strong><br>
+                    Never enter your card number, CVV, ATM PIN, banking
+                    password or OTP on this demonstration page. Only enter
+                    the transaction details requested in this form.
+                </div>
+
+            </aside>
+
+        </div>
+
+    </main>
+
+    <!-- FOOTER -->
+
+    <footer>
+        © 2026 FraudGuard. Fraud Detection and Monitoring System.
+        <br><br>
+        An educational machine-learning demonstration.
+    </footer>
+
+    <!-- JAVASCRIPT -->
+
+    <script>
+        // Flask backend API URL
+        const API_URL = "http://127.0.0.1:5000/api/predict";
+
+        const predictionForm = document.getElementById("predictionForm");
+        const submitBtn = document.getElementById("submitBtn");
+        const resultCard = document.getElementById("resultCard");
+
+        const menuBtn = document.getElementById("menuBtn");
+        const navLinks = document.getElementById("navLinks");
+
+        // Detect whether an admin session exists.
+        // Use the same sessionStorage key as Frontend/js/auth.js.
+        function updateAdminNavigation() {
+            const adminToken = sessionStorage.getItem("fraudguard_token");
+            const adminNavLink = document.getElementById("adminNavLink");
+
+            if (adminToken) {
+                adminNavLink.href = "dashboard.html";
+                adminNavLink.textContent = "← Admin Dashboard";
+            } else {
+                adminNavLink.href = "login.html";
+                adminNavLink.textContent = "Admin Login";
+            }
+        }
+
+        updateAdminNavigation();
+
+        // Mobile navigation
+        menuBtn.addEventListener("click", function () {
+            navLinks.classList.toggle("open");
+        });
+
+        // Close mobile menu after selecting a link
+        navLinks.querySelectorAll("a").forEach(function (link) {
+            link.addEventListener("click", function () {
+                navLinks.classList.remove("open");
+            });
+        });
+
+        // Hide previous result
+        function hideResult() {
+            resultCard.className = "result-card";
+            resultCard.setAttribute("aria-hidden", "true");
+
+            document.getElementById("probabilityFill").style.width = "0%";
+        }
+
+        // Show an error message
+        function showError(message) {
+            resultCard.className = "result-card show error";
+            resultCard.setAttribute("aria-hidden", "false");
+
+            document.getElementById("resultIcon").textContent = "!";
+            document.getElementById("resultTitle").textContent =
+                "Unable to Analyse Transaction";
+
+            document.getElementById("resultSubtitle").textContent =
+                "Please check the information and try again.";
+
+            document.getElementById("predictionValue").textContent = "-";
+            document.getElementById("riskValue").textContent = "-";
+            document.getElementById("probabilityValue").textContent = "-";
+            document.getElementById("statusValue").textContent = "Failed";
+
+            document.getElementById("resultMessage").textContent = message;
+
+            document.getElementById("probabilityFill").style.width = "0%";
+
+            resultCard.scrollIntoView({
+                behavior: "smooth",
+                block: "nearest"
+            });
+        }
+
+        // Convert response probability into a percentage
+        function getProbability(data) {
+            let probability = Number(data.fraud_probability);
+
+            if (!Number.isFinite(probability)) {
+                probability = Number(data.probability);
+            }
+
+            if (!Number.isFinite(probability)) {
+                return null;
+            }
+
+            // Convert decimal probability to percentage if necessary
+            if (probability >= 0 && probability <= 1) {
+                probability = probability * 100;
+            }
+
+            return Math.min(100, Math.max(0, probability));
+        }
+
+        // Display a successful prediction
+        function showResult(data) {
+            const prediction = String(
+                data.prediction || data.result || ""
+            ).trim().toUpperCase();
+
+            const riskLevel = String(
+                data.risk_level || data.risk || "Not provided"
+            ).trim().toUpperCase();
+
+            const probability = getProbability(data);
+
+            if (!prediction) {
+                showError(
+                    "The server response does not contain a prediction. " +
+                    "Please check the backend API response."
+                );
+                return;
+            }
+
+            const isFraud =
+                prediction.includes("FRAUD") &&
+                !prediction.includes("NOT FRAUD");
+
+            resultCard.className = isFraud
+                ? "result-card show fraud"
+                : "result-card show safe";
+
+            resultCard.setAttribute("aria-hidden", "false");
+
+            document.getElementById("resultIcon").textContent =
+                isFraud ? "!" : "✓";
+
+            document.getElementById("resultTitle").textContent =
+                isFraud
+                    ? "Potential Fraud Detected"
+                    : "Transaction Classified as Safe";
+
+            document.getElementById("resultSubtitle").textContent =
+                isFraud
+                    ? "The model identified possible fraudulent activity."
+                    : "The model did not identify this transaction as fraud.";
+
+            document.getElementById("predictionValue").textContent =
+                prediction;
+
+            document.getElementById("riskValue").textContent =
+                riskLevel;
+
+            document.getElementById("probabilityValue").textContent =
+                probability === null
+                    ? "Not provided"
+                    : probability.toFixed(2) + "%";
+
+            document.getElementById("statusValue").textContent =
+                "Completed";
+
+            document.getElementById("probabilityFill").style.width =
+                probability === null ? "0%" : probability + "%";
+
+            document.getElementById("resultMessage").textContent =
+                isFraud
+                    ? "Warning: The model has classified this transaction as potentially fraudulent. Review the transaction carefully."
+                    : "The model has classified this transaction as safe. However, this prediction cannot guarantee that the transaction is free from fraud.";
+
+            resultCard.scrollIntoView({
+                behavior: "smooth",
+                block: "nearest"
+            });
+        }
+
+        // Submit transaction for prediction
+        predictionForm.addEventListener("submit", async function (event) {
+
+            event.preventDefault();
+
+            hideResult();
+
+            const amount = Number(
+                document.getElementById("amount").value
+            );
+
+            const previousTransactions = Number(
+                document.getElementById("previous_transactions").value
+            );
+
+            const failedAttempts = Number(
+                document.getElementById("failed_attempts").value
+            );
+
+            if (!Number.isFinite(amount) || amount <= 0) {
+                showError("Please enter a valid transaction amount greater than zero.");
+                return;
+            }
+
+            if (
+                !Number.isInteger(previousTransactions) ||
+                previousTransactions < 0
+            ) {
+                showError("Previous transactions must be a whole number of zero or more.");
+                return;
+            }
+
+            if (
+                !Number.isInteger(failedAttempts) ||
+                failedAttempts < 0
+            ) {
+                showError("Failed attempts must be a whole number of zero or more.");
+                return;
+            }
+
+            // Prepare data for Flask backend
+            const transactionData = {
+                amount: amount,
+
+                transaction_type:
+                    document.getElementById("transaction_type").value,
+
+                location:
+                    document.getElementById("location").value,
+
+                device_type:
+                    document.getElementById("device_type").value,
+
+                transaction_time:
+                    document.getElementById("transaction_time").value,
+
+                previous_transactions: previousTransactions,
+
+                failed_attempts: failedAttempts
+            };
+
+            // Loading state
+            submitBtn.disabled = true;
+            submitBtn.innerHTML =
+                '<span class="loading"></span> Analysing Transaction...';
+
+            try {
+
+                const response = await fetch(API_URL, {
+                    method: "POST",
+
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+
+                    body: JSON.stringify(transactionData)
+                });
+
+                // Read server response
+                const responseText = await response.text();
+
+                let data;
+
+                try {
+                    data = JSON.parse(responseText);
+                } catch (parseError) {
+                    throw new Error(
+                        "The backend returned an invalid response. " +
+                        "Check that the Flask API is running correctly."
+                    );
+                }
+
+                if (!response.ok) {
+                    throw new Error(
+                        data.message ||
+                        data.error ||
+                        "Server error: HTTP " + response.status
+                    );
+                }
+
+                if (data.success === false) {
+                    throw new Error(
+                        data.message ||
+                        data.error ||
+                        "The backend could not process this transaction."
+                    );
+                }
+
+                showResult(data);
+
+            } catch (error) {
+
+                console.error("Prediction Error:", error);
+
+                let message = error.message;
+
+                if (
+                    error instanceof TypeError ||
+                    message.includes("Failed to fetch")
+                ) {
+                    message =
+                        "Cannot connect to the FraudGuard backend. " +
+                        "Please start the Flask server and check the API URL.";
+                }
+
+                showError(message);
+
+            } finally {
+
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = "Analyse Transaction →";
+
+            }
+
+        });
+
+        // Set current time as the default transaction time
+        document.getElementById("transaction_time").value =
+            new Date().toTimeString().slice(0, 5);
+
+    </script>
+
+</body>
+</html>
